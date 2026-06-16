@@ -20,7 +20,7 @@ const satisfy = Satisfy({
   weight: ["400"],
 });
 
-const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://icescream.cedarcitywebdesign.com";
+const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://i-scream-you-scream.vercel.app";
 
 export const viewport: Viewport = {
   width: "device-width",
