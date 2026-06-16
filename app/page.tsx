@@ -111,19 +111,14 @@ export default function Home() {
         </span>
       </header>
 
-      {/* Main content: side-by-side on desktop, stacked on mobile */}
       <main className="flex-1 px-4 pb-6">
-        <div className="max-w-5xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
-          <div className="max-w-lg mx-auto w-full lg:max-w-none">
-            <RequestSection
-              onSubmit={handleSubmitRequest}
-              heat={heat}
-              truck={truck}
-            />
-          </div>
-          <div className="max-w-lg mx-auto w-full lg:max-w-none">
-            <TruckTracker truck={truck} heat={heat} />
-          </div>
+        <div className="max-w-lg mx-auto w-full space-y-6">
+          <RequestSection
+            onSubmit={handleSubmitRequest}
+            heat={heat}
+            truck={truck}
+          />
+          <TruckTracker truck={truck} heat={heat} />
         </div>
       </main>
 

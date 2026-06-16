@@ -41,21 +41,12 @@ export const metadata: Metadata = {
       "Ring the bell and the Ice Cream Man heads to your street. Cedar City & surrounding areas.",
     url: appUrl,
     siteName: "I Scream, You Scream",
-    images: [
-      {
-        url: "/og-image.png",
-        width: 1200,
-        height: 630,
-        alt: "I Scream, You Scream — Ice Cream Truck Request App",
-      },
-    ],
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
     title: "I Scream, You Scream — Request the Ice Cream Truck",
     description: "Ring the bell and the Ice Cream Man heads to your street.",
-    images: ["/og-image.png"],
   },
   appleWebApp: {
     capable: true,
