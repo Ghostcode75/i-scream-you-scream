@@ -1,6 +1,18 @@
 "use client";
 
 import { useState } from "react";
+import {
+  IconBellRinging,
+  IconChevronLeft,
+  IconChevronRight,
+  IconBrandFacebook,
+  IconCopy,
+  IconMessage,
+  IconMapPin,
+  IconUsers,
+  IconRefresh,
+  IconFlame,
+} from "@tabler/icons-react";
 import { AREAS } from "@/config/areas";
 import { TREATS } from "@/config/menu";
 import { TruckStatus } from "@/lib/types";
@@ -22,6 +34,7 @@ export default function RequestFlow({ onSubmit, heat, truck }: RequestFlowProps)
   const [neighbors, setNeighbors] = useState(1);
   const [submitted, setSubmitted] = useState(false);
   const [lastReq, setLastReq] = useState<any>(null);
+  const [bellRinging, setBellRinging] = useState(false);
 
   const totalItems = Object.values(treats).reduce((a, b) => a + b, 0);
   const totalPrice = TREATS.reduce((s, t) => s + (treats[t.id] || 0) * t.price, 0);
@@ -36,6 +49,7 @@ export default function RequestFlow({ onSubmit, heat, truck }: RequestFlowProps)
   };
 
   const submit = () => {
+    setBellRinging(true);
     playJingle();
     const req = {
       id: genId(),
@@ -51,7 +65,10 @@ export default function RequestFlow({ onSubmit, heat, truck }: RequestFlowProps)
     };
     onSubmit(req);
     setLastReq(req);
-    setSubmitted(true);
+    setTimeout(() => {
+      setSubmitted(true);
+      setBellRinging(false);
+    }, 600);
   };
 
   const reset = () => {
@@ -67,94 +84,88 @@ export default function RequestFlow({ onSubmit, heat, truck }: RequestFlowProps)
 
   const shareMsg = () => {
     const areaName = AREAS.find((x) => x.id === area)?.name;
-    return `🍦 I just requested the Ice Cream Man to ${areaName}! Get yours too — open the app and ring the bell!`;
+    return `I just requested the Ice Cream Man to ${areaName}! Get yours too — open the app and ring the bell!`;
   };
 
+  /* ─── Confirmation Screen ─── */
   if (submitted && lastReq) {
+    const areaEta = AREAS.find((a) => a.id === area)?.eta || 15;
     return (
-      <div className="pb-24 px-4 pt-6 max-w-md mx-auto">
-        <div className="bg-white rounded-2xl p-6 shadow-sm text-center animate-slideUp">
-          <div className="text-5xl mb-3">🎉</div>
-          <h2 className="text-xl font-bold text-[#3A2D1E] mb-1">You rang the bell!</h2>
-          <p className="text-sm text-[#9A8B7A] mb-4">Your request is in the queue</p>
+      <div className="pb-28 px-4 pt-8 max-w-lg mx-auto w-full">
+        <div className="card text-center animate-slideUp">
+          <div className="w-16 h-16 rounded-full bg-[#E8F8F0] flex items-center justify-center mx-auto mb-4">
+            <IconBellRinging size={32} className="text-[#4CAF50]" />
+          </div>
+          <h2 className="text-xl sm:text-2xl mb-1">You rang the bell!</h2>
+          <p className="text-sm text-[#8A9BA8] mb-5">Your request is in the queue</p>
 
-          <div className="bg-[#E84B3A] text-white rounded-2xl p-4 my-4 inline-flex flex-col gap-1">
-            <span className="text-xs uppercase tracking-wider opacity-90">Est. arrival</span>
-            <span className="text-4xl font-bold leading-none">
-              ~{AREAS.find((a) => a.id === area)?.eta} min
-            </span>
-            <span className="text-xs opacity-75">once the truck heads your way</span>
+          <div className="inline-flex flex-col bg-gradient-to-br from-[#6EC6CE] to-[#5BB8C0] text-white rounded-2xl px-8 py-4 mb-5">
+            <span className="text-[10px] uppercase tracking-widest opacity-80">Est. arrival</span>
+            <span className="text-4xl font-extrabold leading-none my-1">~{areaEta} min</span>
+            <span className="text-[11px] opacity-70">once the truck heads your way</span>
           </div>
 
           {totalItems > 0 && (
-            <div className="bg-[#FFF8F0] rounded-xl p-4 my-4 text-left text-sm">
-              <p className="text-xs uppercase font-bold text-[#9A8B7A] tracking-wide mb-2">
-                Pre-order
-              </p>
+            <div className="bg-[#FFF9F5] rounded-xl p-4 my-4 text-left text-sm">
+              <p className="text-[10px] uppercase font-bold text-[#8A9BA8] tracking-wide mb-2">Pre-order</p>
               {TREATS.filter((t) => treats[t.id]).map((t) => (
-                <div
-                  key={t.id}
-                  className="flex justify-between text-[#3A2D1E] py-1 text-sm"
-                >
-                  <span>
-                    {t.emoji} {t.name} × {treats[t.id]}
-                  </span>
-                  <span>${t.price * treats[t.id]}</span>
+                <div key={t.id} className="flex justify-between text-[#3A2D1E] py-1">
+                  <span>{t.emoji} {t.name} x {treats[t.id]}</span>
+                  <span className="font-semibold">${t.price * treats[t.id]}</span>
                 </div>
               ))}
-              <div className="flex justify-between font-bold text-[#E84B3A] border-t border-[#EDE6DD] pt-2 mt-2">
+              <div className="flex justify-between font-bold text-[#E8729A] border-t border-[#E2E8EC] pt-2 mt-2 text-base">
                 <span>Total</span>
                 <span>${totalPrice}</span>
               </div>
-              <p className="text-xs text-[#9A8B7A] mt-2">Pay at the truck — cash or card</p>
+              <p className="text-[11px] text-[#8A9BA8] mt-2">Pay at the truck — cash or card</p>
             </div>
           )}
 
-          <div className="border-t border-[#F5F0EA] pt-4 mt-4">
-            <p className="text-xs uppercase font-bold text-[#9A8B7A] tracking-wide mb-3">
+          <div className="border-t border-[#E2E8EC] pt-5 mt-5">
+            <p className="text-[10px] uppercase font-bold text-[#8A9BA8] tracking-wide mb-3">
               Tell the neighbors
             </p>
-            <div className="flex gap-2 flex-wrap justify-center mb-4">
+            <div className="grid grid-cols-3 gap-2 mb-4 max-w-xs mx-auto">
               <button
                 onClick={() =>
                   window.open(
-                    `https://www.facebook.com/sharer/sharer.php?quote=${encodeURIComponent(
-                      shareMsg()
-                    )}`,
+                    `https://www.facebook.com/sharer/sharer.php?quote=${encodeURIComponent(shareMsg())}`,
                     "_blank"
                   )
                 }
-                className="px-3 py-2 rounded-lg border-2 border-[#EDE6DD] bg-white text-xs font-semibold text-[#3A2D1E] hover:bg-[#FFF8F0] transition"
+                className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-[#1877F2] text-white text-xs font-semibold hover:brightness-110 transition"
               >
-                📘 Facebook
+                <IconBrandFacebook size={16} />
+                Share
               </button>
               <button
                 onClick={() => {
                   navigator.clipboard?.writeText(shareMsg());
                   alert("Copied to clipboard!");
                 }}
-                className="px-3 py-2 rounded-lg border-2 border-[#EDE6DD] bg-white text-xs font-semibold text-[#3A2D1E] hover:bg-[#FFF8F0] transition"
+                className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl border-2 border-[#E2E8EC] bg-white text-xs font-semibold text-[#3A2D1E] hover:bg-[#F5F8FA] transition"
               >
-                📋 Copy
+                <IconCopy size={16} />
+                Copy
               </button>
               <button
                 onClick={() =>
-                  window.open(
-                    `sms:?body=${encodeURIComponent(shareMsg())}`,
-                    "_blank"
-                  )
+                  window.open(`sms:?body=${encodeURIComponent(shareMsg())}`, "_blank")
                 }
-                className="px-3 py-2 rounded-lg bg-[#25D366] text-white text-xs font-semibold hover:brightness-110 transition"
+                className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-[#25D366] text-white text-xs font-semibold hover:brightness-110 transition"
               >
-                💬 Text
+                <IconMessage size={16} />
+                Text
               </button>
             </div>
           </div>
 
           <button
             onClick={reset}
-            className="w-full mt-4 py-3 rounded-xl bg-[#3A2D1E] text-white font-bold hover:bg-[#2a2419] transition"
+            className="w-full mt-2 py-3 rounded-xl bg-[#3A2D1E] text-white font-bold hover:bg-[#2a2419] transition inline-flex items-center justify-center gap-2"
           >
+            <IconRefresh size={18} />
             New Request
           </button>
         </div>
@@ -162,251 +173,259 @@ export default function RequestFlow({ onSubmit, heat, truck }: RequestFlowProps)
     );
   }
 
-  return (
-    <div className="pb-24 px-4 pt-6 max-w-md mx-auto">
-      {step === 0 && (
-        <div className="animate-slideUp">
-          <div className="text-center mb-6">
-            <div className="flex justify-center mb-4">
-              <TruckLogo size={110} />
-            </div>
-            <h1 className="text-3xl font-bold text-[#3A2D1E] mb-1 leading-tight">
-              I Scream,
-              <br />
-              You Scream
-            </h1>
-            <p className="text-sm text-[#7A6B5A] mb-2">
-              Request the Ice Cream Man to cruise your street
-            </p>
-            <span className="inline-block bg-[#E84B3A] text-white text-xs font-bold px-4 py-1 rounded-full">
-              Cedar City & Surrounding Areas
-            </span>
-
-            {truck.active && (
-              <div className="mt-4 bg-white rounded-xl p-3 shadow-sm text-center text-sm font-semibold text-[#3A2D1E]">
-                <span className="inline-block w-2 h-2 bg-[#4CAF50] rounded-full mr-2 animate-pulse"></span>
-                Truck is out near
-                <strong className="ml-1">
-                  {AREAS.find((a) => a.id === truck.area)?.short || "—"}
-                </strong>
-              </div>
-            )}
+  /* ─── Step 0: Hero + Area Picker ─── */
+  if (step === 0) {
+    return (
+      <div className="pb-28 px-4 pt-6 max-w-lg mx-auto w-full">
+        <div className="text-center mb-6 animate-slideUp">
+          <div className="flex justify-center mb-3">
+            <TruckLogo size={140} className="animate-truck" />
           </div>
+          <h1 className="font-script text-3xl min-[400px]:text-4xl sm:text-5xl text-[#E8729A] mb-1 tracking-wide">
+            I Scream, You Scream
+          </h1>
+          <p className="text-sm sm:text-base text-[#6B7C88] mb-3">
+            Request the Ice Cream Man to cruise your street
+          </p>
+          <span className="inline-block bg-gradient-to-r from-[#6EC6CE] to-[#5BB8C0] text-white text-[10px] sm:text-xs font-bold px-5 py-1.5 rounded-full uppercase tracking-wider">
+            Cedar City & Surrounding Areas
+          </span>
 
-          <div className="bg-white rounded-2xl p-5 shadow-sm">
-            <h2 className="text-lg font-bold text-[#3A2D1E] mb-3">Where are you?</h2>
-            <div className="grid grid-cols-2 gap-2">
-              {AREAS.map((a) => {
-                const h = heat[a.id] || 0;
-                return (
-                  <button
-                    key={a.id}
-                    onClick={() => {
-                      setArea(a.id);
-                      setStep(1);
-                    }}
-                    className={`text-left p-3 rounded-xl border-2 transition ${
-                      area === a.id
-                        ? "border-[#E84B3A] bg-[#FFF0ED]"
-                        : "border-[#EDE6DD] bg-[#FDFBF8] hover:border-[#D4C4B0]"
-                    }`}
-                  >
-                    <span className="block text-sm font-bold text-[#3A2D1E]">
-                      {a.short}
-                    </span>
-                    <span className="block text-xs text-[#9A8B7A] mt-1">
-                      {a.desc}
-                    </span>
-                    {h > 0 && (
-                      <span className="text-xs bg-[#FFF3E0] rounded px-2 py-1 mt-2 inline-block">
-                        🔥 {h}
-                      </span>
-                    )}
-                  </button>
-                );
-              })}
+          {truck.active && (
+            <div className="mt-4 bg-white rounded-xl p-3 shadow-sm inline-flex items-center gap-2 text-sm font-semibold text-[#3A2D1E]">
+              <span className="w-2.5 h-2.5 bg-[#4CAF50] rounded-full animate-pulse shrink-0" />
+              Truck is near{" "}
+              <strong className="text-[#6EC6CE]">
+                {AREAS.find((a) => a.id === truck.area)?.short || "—"}
+              </strong>
             </div>
+          )}
+        </div>
+
+        <div className="card animate-slideUp stagger-2">
+          <h2 className="text-lg mb-1">Where are you?</h2>
+          <p className="text-sm text-[#8A9BA8] mb-3">Pick your area to get started</p>
+          <div className="grid grid-cols-1 min-[400px]:grid-cols-2 gap-2">
+            {AREAS.map((a) => {
+              const h = heat[a.id] || 0;
+              return (
+                <button
+                  key={a.id}
+                  onClick={() => { setArea(a.id); setStep(1); }}
+                  className="text-left p-3 rounded-xl border-2 border-[#E2E8EC] bg-white hover:border-[#6EC6CE] hover:bg-[#F0FAFB] active:bg-[#E8F6F8] transition relative group"
+                >
+                  <span className="block text-sm font-bold text-[#3A2D1E] group-hover:text-[#5BB8C0] transition">
+                    {a.short}
+                  </span>
+                  <span className="block text-[11px] text-[#8A9BA8] mt-0.5">{a.desc}</span>
+                  {h > 0 && (
+                    <span className="absolute top-2 right-2 inline-flex items-center gap-0.5 text-[10px] bg-[#FFF3E0] text-[#E67E22] rounded-md px-1.5 py-0.5 font-bold">
+                      <IconFlame size={10} /> {h}
+                    </span>
+                  )}
+                </button>
+              );
+            })}
           </div>
         </div>
-      )}
+      </div>
+    );
+  }
 
-      {step === 1 && (
-        <div className="bg-white rounded-2xl p-5 shadow-sm animate-slideUp">
-          <h2 className="text-lg font-bold text-[#3A2D1E] mb-1">What street?</h2>
-          <p className="text-sm text-[#9A8B7A] mb-4">Cross streets work great</p>
+  /* ─── Step 1: Street Input ─── */
+  if (step === 1) {
+    return (
+      <div className="pb-28 px-4 pt-8 max-w-lg mx-auto w-full">
+        <div className="card animate-slideUp">
+          <div className="flex items-center gap-2 mb-1">
+            <IconMapPin size={20} className="text-[#6EC6CE]" />
+            <h2 className="text-lg">What street?</h2>
+          </div>
+          <p className="text-sm text-[#8A9BA8] mb-4">Cross streets work great</p>
           <input
             type="text"
             placeholder="e.g. 200 N & Main"
             value={street}
             onChange={(e) => setStreet(e.target.value)}
-            className="w-full px-4 py-3 border-2 border-[#EDE6DD] rounded-xl bg-[#FDFBF8] text-[#3A2D1E] focus:border-[#E84B3A] focus:outline-none mb-3"
+            autoFocus
+            className="w-full px-4 py-3 border-2 border-[#E2E8EC] rounded-xl bg-[#FAFCFD] text-[#3A2D1E] text-base mb-3"
           />
           <input
             type="text"
             placeholder="Your name (optional)"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="w-full px-4 py-3 border-2 border-[#EDE6DD] rounded-xl bg-[#FDFBF8] text-[#3A2D1E] focus:border-[#E84B3A] focus:outline-none mb-4"
+            className="w-full px-4 py-3 border-2 border-[#E2E8EC] rounded-xl bg-[#FAFCFD] text-[#3A2D1E] text-base mb-5"
           />
           <div className="flex gap-2">
             <button
               onClick={() => setStep(0)}
-              className="flex-1 py-3 rounded-xl border-2 border-[#EDE6DD] bg-white text-sm font-semibold text-[#7A6B5A] hover:bg-[#FFF8F0] transition"
+              className="flex-1 py-3 rounded-xl border-2 border-[#E2E8EC] bg-white text-sm font-semibold text-[#6B7C88] hover:bg-[#F5F8FA] transition inline-flex items-center justify-center gap-1"
             >
-              Back
+              <IconChevronLeft size={16} /> Back
             </button>
             <button
               onClick={() => setStep(2)}
               disabled={!street.trim()}
-              className="flex-1 py-3 rounded-xl bg-[#3A2D1E] text-white text-sm font-bold disabled:opacity-40 hover:bg-[#2a2419] transition"
+              className="flex-[2] py-3 rounded-xl bg-[#6EC6CE] text-white text-sm font-bold disabled:opacity-40 hover:bg-[#5BB8C0] transition inline-flex items-center justify-center gap-1"
             >
-              Next
+              Next <IconChevronRight size={16} />
             </button>
           </div>
         </div>
-      )}
+      </div>
+    );
+  }
 
-      {step === 2 && (
-        <div className="bg-white rounded-2xl p-5 shadow-sm animate-slideUp">
-          <h2 className="text-lg font-bold text-[#3A2D1E] mb-1">Pre-order treats</h2>
-          <p className="text-sm text-[#9A8B7A] mb-4">Optional — buy at the truck too</p>
-          <div className="grid grid-cols-3 gap-2 mb-4">
-            {TREATS.map((t) => (
-              <div
-                key={t.id}
-                className={`flex flex-col items-center p-3 rounded-xl border-2 transition ${
-                  treats[t.id]
-                    ? "border-[#FF8FAB] bg-[#FFF5F7]"
-                    : "border-[#EDE6DD] bg-[#FDFBF8]"
-                }`}
-              >
-                <span className="text-2xl mb-1">{t.emoji}</span>
-                <span className="text-xs font-bold text-[#3A2D1E] text-center line-clamp-2">
-                  {t.name}
-                </span>
-                <span className="text-xs text-[#9A8B7A]">${t.price}</span>
-                <div className="flex items-center gap-1 mt-2">
-                  <button
-                    onClick={() => toggle(t.id, -1)}
-                    disabled={!treats[t.id]}
-                    className="w-6 h-6 rounded-full border-2 border-[#EDE6DD] bg-white flex items-center justify-center text-sm font-bold text-[#3A2D1E] hover:bg-[#FFF8F0] disabled:opacity-30 transition"
-                  >
-                    −
-                  </button>
-                  <span className="w-4 text-center text-sm font-bold">
-                    {treats[t.id] || 0}
+  /* ─── Step 2: Treat Menu ─── */
+  if (step === 2) {
+    return (
+      <div className="pb-28 px-4 pt-8 max-w-lg mx-auto w-full">
+        <div className="card animate-slideUp">
+          <h2 className="text-lg mb-1">Pre-order treats</h2>
+          <p className="text-sm text-[#8A9BA8] mb-4">Optional — you can buy at the truck too</p>
+
+          <div className="grid grid-cols-2 min-[400px]:grid-cols-3 sm:grid-cols-4 gap-2 mb-4">
+            {TREATS.map((t) => {
+              const qty = treats[t.id] || 0;
+              return (
+                <div
+                  key={t.id}
+                  className={`flex flex-col items-center p-2 min-[400px]:p-2.5 sm:p-3 rounded-xl border-2 transition ${
+                    qty > 0
+                      ? "border-[#F4A7BA] bg-[#FFF5F8]"
+                      : "border-[#E2E8EC] bg-white"
+                  }`}
+                >
+                  <span className="text-xl sm:text-2xl mb-1">{t.emoji}</span>
+                  <span className="text-[10px] sm:text-xs font-bold text-[#3A2D1E] text-center leading-tight min-h-[24px] flex items-center">
+                    {t.name}
                   </span>
-                  <button
-                    onClick={() => toggle(t.id, 1)}
-                    className="w-6 h-6 rounded-full border-2 border-[#EDE6DD] bg-white flex items-center justify-center text-sm font-bold text-[#3A2D1E] hover:bg-[#FFF8F0] transition"
-                  >
-                    +
-                  </button>
+                  <span className="text-[11px] text-[#8A9BA8] mb-1.5">${t.price}</span>
+                  <div className="flex items-center gap-1">
+                    <button
+                      onClick={() => toggle(t.id, -1)}
+                      disabled={!qty}
+                      className="w-7 h-7 rounded-full border border-[#E2E8EC] bg-white flex items-center justify-center text-sm font-bold text-[#3A2D1E] disabled:opacity-20"
+                    >
+                      −
+                    </button>
+                    <span className="w-5 text-center text-sm font-bold tabular-nums">{qty}</span>
+                    <button
+                      onClick={() => toggle(t.id, 1)}
+                      className="w-7 h-7 rounded-full border border-[#6EC6CE] bg-[#F0FAFB] flex items-center justify-center text-sm font-bold text-[#5BB8C0]"
+                    >
+                      +
+                    </button>
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
 
           {totalItems > 0 && (
-            <div className="text-center text-sm text-[#3A2D1E] bg-[#FFF8F0] rounded-xl p-3 mb-4 font-semibold">
-              {totalItems} item{totalItems > 1 ? "s" : ""} — <strong>${totalPrice}</strong>
+            <div className="text-center text-sm text-[#3A2D1E] bg-[#FFF9F5] rounded-xl p-3 mb-4 font-semibold border border-[#F4E8DD]">
+              {totalItems} item{totalItems > 1 ? "s" : ""} — <span className="text-[#E8729A]">${totalPrice}</span>
             </div>
           )}
 
           <div className="flex gap-2">
             <button
               onClick={() => setStep(1)}
-              className="flex-1 py-3 rounded-xl border-2 border-[#EDE6DD] bg-white text-sm font-semibold text-[#7A6B5A] hover:bg-[#FFF8F0] transition"
+              className="flex-1 py-3 rounded-xl border-2 border-[#E2E8EC] bg-white text-sm font-semibold text-[#6B7C88] hover:bg-[#F5F8FA] transition inline-flex items-center justify-center gap-1"
             >
-              Back
+              <IconChevronLeft size={16} /> Back
             </button>
             <button
               onClick={() => setStep(3)}
-              className="flex-1 py-3 rounded-xl bg-[#3A2D1E] text-white text-sm font-bold hover:bg-[#2a2419] transition"
+              className="flex-[2] py-3 rounded-xl bg-[#6EC6CE] text-white text-sm font-bold hover:bg-[#5BB8C0] transition inline-flex items-center justify-center gap-1"
             >
-              Next
+              Next <IconChevronRight size={16} />
             </button>
           </div>
         </div>
-      )}
+      </div>
+    );
+  }
 
-      {step === 3 && (
-        <div className="bg-white rounded-2xl p-5 shadow-sm animate-slideUp">
-          <h2 className="text-lg font-bold text-[#3A2D1E] mb-1">Rally the block</h2>
-          <p className="text-sm text-[#9A8B7A] mb-6">
-            More households = truck comes sooner
-          </p>
+  /* ─── Step 3: Rally + Summary + Submit ─── */
+  return (
+    <div className="pb-28 px-4 pt-8 max-w-lg mx-auto w-full">
+      <div className="card animate-slideUp">
+        <div className="flex items-center gap-2 mb-1">
+          <IconUsers size={20} className="text-[#6EC6CE]" />
+          <h2 className="text-lg">Rally the block</h2>
+        </div>
+        <p className="text-sm text-[#8A9BA8] mb-5">More households = truck comes sooner</p>
 
-          <div className="flex items-center justify-center gap-8 mb-6">
-            <button
-              onClick={() => setNeighbors((n) => Math.max(1, n - 1))}
-              className="w-12 h-12 rounded-full border-2 border-[#EDE6DD] bg-white flex items-center justify-center text-2xl font-bold text-[#3A2D1E] hover:bg-[#FFF8F0] transition"
-            >
-              −
-            </button>
-            <div className="text-center">
-              <div className="text-5xl font-bold text-[#E84B3A] leading-none">
-                {neighbors}
-              </div>
-              <div className="text-sm text-[#9A8B7A] mt-1">
-                {neighbors === 1 ? "household" : "households"}
-              </div>
+        <div className="flex items-center justify-center gap-8 mb-6">
+          <button
+            onClick={() => setNeighbors((n) => Math.max(1, n - 1))}
+            className="w-12 h-12 rounded-full border-2 border-[#E2E8EC] bg-white flex items-center justify-center text-xl font-bold text-[#3A2D1E] hover:bg-[#F5F8FA]"
+          >
+            −
+          </button>
+          <div className="text-center">
+            <div className="text-5xl font-extrabold text-[#E8729A] leading-none tabular-nums">
+              {neighbors}
             </div>
-            <button
-              onClick={() => setNeighbors((n) => Math.min(30, n + 1))}
-              className="w-12 h-12 rounded-full border-2 border-[#EDE6DD] bg-white flex items-center justify-center text-2xl font-bold text-[#3A2D1E] hover:bg-[#FFF8F0] transition"
-            >
-              +
-            </button>
-          </div>
-
-          <div className="bg-[#FFF8F0] rounded-xl p-4 mb-4 text-sm">
-            <div className="flex justify-between py-1 border-b border-[#EDE6DD]">
-              <span className="font-semibold text-[#9A8B7A]">Area</span>
-              <span className="text-[#3A2D1E]">
-                {AREAS.find((a) => a.id === area)?.name}
-              </span>
-            </div>
-            <div className="flex justify-between py-1 border-b border-[#EDE6DD]">
-              <span className="font-semibold text-[#9A8B7A]">Street</span>
-              <span className="text-[#3A2D1E]">{street}</span>
-            </div>
-            {name && (
-              <div className="flex justify-between py-1 border-b border-[#EDE6DD]">
-                <span className="font-semibold text-[#9A8B7A]">Name</span>
-                <span className="text-[#3A2D1E]">{name}</span>
-              </div>
-            )}
-            {totalItems > 0 && (
-              <div className="flex justify-between py-1 border-b border-[#EDE6DD]">
-                <span className="font-semibold text-[#9A8B7A]">Pre-order</span>
-                <span className="text-[#3A2D1E]">
-                  {totalItems} items — ${totalPrice}
-                </span>
-              </div>
-            )}
-            <div className="flex justify-between py-1 font-bold">
-              <span className="text-[#9A8B7A]">Households</span>
-              <span className="text-[#E84B3A]">{neighbors}</span>
+            <div className="text-sm text-[#8A9BA8] mt-1">
+              {neighbors === 1 ? "household" : "households"}
             </div>
           </div>
+          <button
+            onClick={() => setNeighbors((n) => Math.min(30, n + 1))}
+            className="w-12 h-12 rounded-full border-2 border-[#6EC6CE] bg-[#F0FAFB] flex items-center justify-center text-xl font-bold text-[#5BB8C0]"
+          >
+            +
+          </button>
+        </div>
 
-          <div className="flex gap-2">
-            <button
-              onClick={() => setStep(2)}
-              className="flex-1 py-3 rounded-xl border-2 border-[#EDE6DD] bg-white text-sm font-semibold text-[#7A6B5A] hover:bg-[#FFF8F0] transition"
-            >
-              Back
-            </button>
-            <button
-              onClick={submit}
-              className="flex-1 py-3 rounded-xl bg-[#E84B3A] text-white text-base font-bold hover:brightness-110 transition"
-            >
-              🔔 Ring the Bell!
-            </button>
+        {/* Summary */}
+        <div className="bg-[#F5F8FA] rounded-xl p-4 mb-5 text-sm space-y-1.5">
+          <div className="flex justify-between">
+            <span className="font-semibold text-[#8A9BA8]">Area</span>
+            <span className="text-[#3A2D1E]">{AREAS.find((a) => a.id === area)?.name}</span>
+          </div>
+          <div className="flex justify-between">
+            <span className="font-semibold text-[#8A9BA8]">Street</span>
+            <span className="text-[#3A2D1E]">{street}</span>
+          </div>
+          {name && (
+            <div className="flex justify-between">
+              <span className="font-semibold text-[#8A9BA8]">Name</span>
+              <span className="text-[#3A2D1E]">{name}</span>
+            </div>
+          )}
+          {totalItems > 0 && (
+            <div className="flex justify-between">
+              <span className="font-semibold text-[#8A9BA8]">Pre-order</span>
+              <span className="text-[#3A2D1E]">{totalItems} items — ${totalPrice}</span>
+            </div>
+          )}
+          <div className="flex justify-between font-bold pt-1 border-t border-[#E2E8EC]">
+            <span className="text-[#8A9BA8]">Households</span>
+            <span className="text-[#E8729A]">{neighbors}</span>
           </div>
         </div>
-      )}
+
+        <div className="flex gap-2">
+          <button
+            onClick={() => setStep(2)}
+            className="flex-1 py-3 rounded-xl border-2 border-[#E2E8EC] bg-white text-sm font-semibold text-[#6B7C88] hover:bg-[#F5F8FA] transition inline-flex items-center justify-center gap-1"
+          >
+            <IconChevronLeft size={16} /> Back
+          </button>
+          <button
+            onClick={submit}
+            disabled={bellRinging}
+            className="flex-[2] py-3.5 rounded-xl bg-gradient-to-r from-[#E8729A] to-[#F4A7BA] text-white text-base font-bold hover:brightness-105 transition inline-flex items-center justify-center gap-2 shadow-md shadow-[#F4A7BA]/30"
+          >
+            <IconBellRinging size={20} className={bellRinging ? "animate-ring" : ""} />
+            Ring the Bell!
+          </button>
+        </div>
+      </div>
     </div>
   );
 }

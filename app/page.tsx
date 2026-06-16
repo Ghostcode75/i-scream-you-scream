@@ -2,17 +2,12 @@
 
 import { useState, useEffect } from "react";
 import { IceCreamRequest, TruckStatus } from "@/lib/types";
-import { genId } from "@/lib/utils";
-import TabBar from "@/components/TabBar";
-import RequestFlow from "@/components/RequestFlow";
+import RequestSection from "@/components/RequestSection";
 import TruckTracker from "@/components/TruckTracker";
-import CommunityFeed from "@/components/CommunityFeed";
-import DriverDash from "@/components/DriverDash";
 import Footer from "@/components/Footer";
 import TruckLogo from "@/components/TruckLogo";
 
 export default function Home() {
-  const [tab, setTab] = useState("request");
   const [requests, setRequests] = useState<IceCreamRequest[]>([]);
   const [truck, setTruck] = useState<TruckStatus>({
     active: false,
@@ -22,7 +17,6 @@ export default function Home() {
   });
   const [loaded, setLoaded] = useState(false);
 
-  // Initial load
   useEffect(() => {
     const loadData = async () => {
       try {
@@ -30,52 +24,42 @@ export default function Home() {
           fetch("/api/request"),
           fetch("/api/truck"),
         ]);
-
         if (reqRes.ok) {
           const data = await reqRes.json();
           setRequests(data.data || []);
         }
-
         if (truckRes.ok) {
           const data = await truckRes.json();
-          setTruck(data.data || {});
+          setTruck(data.data || { active: false, area: null, heading: null, startedAt: null });
         }
-      } catch (error) {
-        console.error("Error loading data:", error);
+      } catch (err) {
+        console.error("Load error:", err);
       } finally {
         setLoaded(true);
       }
     };
-
     loadData();
   }, []);
 
-  // Polling for updates
   useEffect(() => {
     if (!loaded) return;
-
-    const interval = setInterval(async () => {
+    const iv = setInterval(async () => {
       try {
         const [reqRes, truckRes] = await Promise.all([
           fetch("/api/request"),
           fetch("/api/truck"),
         ]);
-
         if (reqRes.ok) {
           const data = await reqRes.json();
           setRequests(data.data || []);
         }
-
         if (truckRes.ok) {
           const data = await truckRes.json();
-          setTruck(data.data || {});
+          setTruck(data.data || truck);
         }
-      } catch (error) {
-        console.error("Error polling:", error);
-      }
-    }, 6000);
-
-    return () => clearInterval(interval);
+      } catch {}
+    }, 7000);
+    return () => clearInterval(iv);
   }, [loaded]);
 
   const handleSubmitRequest = async (request: Partial<IceCreamRequest>) => {
@@ -85,55 +69,12 @@ export default function Home() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(request),
       });
-
       if (res.ok) {
         const data = await res.json();
         setRequests((prev) => [...prev, data.data].slice(-150));
       }
-    } catch (error) {
-      console.error("Error submitting request:", error);
-    }
-  };
-
-  const handleUpdateRequest = async (id: string, status: string) => {
-    try {
-      const res = await fetch(`/api/request/${id}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          "x-driver-pin": "1234",
-        },
-        body: JSON.stringify({ status }),
-      });
-
-      if (res.ok) {
-        const data = await res.json();
-        setRequests((prev) =>
-          prev.map((r) => (r.id === id ? data.data : r))
-        );
-      }
-    } catch (error) {
-      console.error("Error updating request:", error);
-    }
-  };
-
-  const handleUpdateTruck = async (updates: Partial<TruckStatus>) => {
-    try {
-      const res = await fetch("/api/truck", {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          "x-driver-pin": "1234",
-        },
-        body: JSON.stringify(updates),
-      });
-
-      if (res.ok) {
-        const data = await res.json();
-        setTruck(data.data);
-      }
-    } catch (error) {
-      console.error("Error updating truck:", error);
+    } catch (err) {
+      console.error("Submit error:", err);
     }
   };
 
@@ -145,36 +86,48 @@ export default function Home() {
 
   if (!loaded) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-b from-[#FFF8F0] to-[#FFE8D6]">
-        <TruckLogo size={100} />
-        <p className="text-[#9A8B7A] mt-4 font-semibold">Loading...</p>
+      <div className="flex flex-col items-center justify-center min-h-screen min-h-dvh bg-[#FFF9F5]">
+        <TruckLogo size={130} className="animate-truck" />
+        <p className="font-script text-2xl text-[#E8729A] mt-4">Loading...</p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#FFF8F0] via-[#FFE8D6] to-[#FFDBC5] flex flex-col">
-      <main className="flex-1">
-        {tab === "request" && (
-          <RequestFlow onSubmit={handleSubmitRequest} heat={heat} truck={truck} />
-        )}
-        {tab === "track" && (
-          <TruckTracker truck={truck} requests={requests} heat={heat} />
-        )}
-        {tab === "feed" && <CommunityFeed requests={requests} />}
-        {tab === "drive" && (
-          <DriverDash
-            requests={requests}
-            truck={truck}
-            heat={heat}
-            onUpdateRequest={handleUpdateRequest}
-            onUpdateTruck={handleUpdateTruck}
-          />
-        )}
+    <div className="min-h-screen min-h-dvh bg-[#FFF9F5] flex flex-col">
+      {/* Hero */}
+      <header className="text-center pt-8 pb-4 px-4 animate-slideUp">
+        <div className="flex justify-center mb-3">
+          <TruckLogo size={130} className="animate-truck" />
+        </div>
+        <h1 className="font-script text-3xl min-[400px]:text-4xl sm:text-5xl text-[#E8729A] mb-1 tracking-wide">
+          I Scream, You Scream
+        </h1>
+        <p className="text-sm sm:text-base text-[#6B7C88] mb-3">
+          Request the Ice Cream Man to cruise your street
+        </p>
+        <span className="inline-block bg-gradient-to-r from-[#6EC6CE] to-[#5BB8C0] text-white text-[10px] sm:text-xs font-bold px-5 py-1.5 rounded-full uppercase tracking-wider">
+          Cedar City & Surrounding Areas
+        </span>
+      </header>
+
+      {/* Main content: side-by-side on desktop, stacked on mobile */}
+      <main className="flex-1 px-4 pb-6">
+        <div className="max-w-5xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+          <div className="max-w-lg mx-auto w-full lg:max-w-none">
+            <RequestSection
+              onSubmit={handleSubmitRequest}
+              heat={heat}
+              truck={truck}
+            />
+          </div>
+          <div className="max-w-lg mx-auto w-full lg:max-w-none">
+            <TruckTracker truck={truck} heat={heat} />
+          </div>
+        </div>
       </main>
 
       <Footer />
-      <TabBar activeTab={tab} onTabChange={setTab} pendingCount={pending.length} />
     </div>
   );
 }

@@ -8,17 +8,17 @@
 
 html {
   scroll-behavior: smooth;
+  -webkit-tap-highlight-color: transparent;
 }
 
 body {
-  background: linear-gradient(170deg, #FFF8F0 0%, #FFE8D6 40%, #FFDBC5 100%);
+  background: #FFF9F5;
   font-family: var(--font-inter), system-ui, -apple-system, sans-serif;
   color: #3A2D1E;
   min-height: 100vh;
   min-height: 100dvh;
 }
 
-/* Typography */
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-fredoka), system-ui;
   font-weight: 700;
@@ -42,173 +42,164 @@ h3 {
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  color: #9A8B7A;
+  color: #8A9BA8;
+}
+
+.font-script {
+  font-family: var(--font-satisfy), cursive;
 }
 
 /* Animations */
 @keyframes slideUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes slideDown {
-  from {
-    opacity: 1;
-    transform: translateY(0);
-  }
-  to {
-    opacity: 0;
-    transform: translateY(20px);
-  }
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-@keyframes pulse {
-  0%, 100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.5;
-  }
-}
-
-@keyframes shimmer {
-  0% {
-    background-position: -1000px 0;
-  }
-  100% {
-    background-position: 1000px 0;
-  }
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 @keyframes scalePulse {
-  0%, 100% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.1);
-  }
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.08); }
 }
 
-@keyframes bounce {
-  0%, 100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-8px);
-  }
+@keyframes gentleBounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
 }
 
-@keyframes confetti {
-  0% {
-    opacity: 1;
-    transform: translateY(0) rotate(0deg);
-  }
-  100% {
-    opacity: 0;
-    transform: translateY(200px) rotate(720deg);
-  }
+@keyframes truckRoll {
+  0% { transform: translateX(-6px); }
+  50% { transform: translateX(6px); }
+  100% { transform: translateX(-6px); }
 }
 
-/* Utility classes */
+@keyframes ringBell {
+  0%, 100% { transform: rotate(0deg); }
+  15% { transform: rotate(14deg); }
+  30% { transform: rotate(-12deg); }
+  45% { transform: rotate(10deg); }
+  60% { transform: rotate(-6deg); }
+  75% { transform: rotate(3deg); }
+}
+
+@keyframes waveFloat {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(-12px); }
+}
+
 .animate-slideUp {
-  animation: slideUp 0.4s ease-out;
-}
-
-.animate-slideDown {
-  animation: slideDown 0.4s ease-out;
+  animation: slideUp 0.35s ease-out both;
 }
 
 .animate-fadeIn {
-  animation: fadeIn 0.3s ease-out;
-}
-
-.animate-pulse {
-  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-}
-
-.animate-shimmer {
-  background: linear-gradient(90deg, #FFF8F0 25%, #FFE8D6 50%, #FFF8F0 75%);
-  background-size: 1000px 100%;
-  animation: shimmer 2s infinite;
+  animation: fadeIn 0.3s ease-out both;
 }
 
 .animate-scalePulse {
-  animation: scalePulse 1.2s ease-in-out infinite;
+  animation: scalePulse 1.6s ease-in-out infinite;
 }
 
-.animate-bounce-sm {
-  animation: bounce 0.6s ease-in-out infinite;
+.animate-bounce-gentle {
+  animation: gentleBounce 2s ease-in-out infinite;
 }
 
-/* Button base styles */
+.animate-truck {
+  animation: truckRoll 3s ease-in-out infinite;
+}
+
+.animate-ring {
+  animation: ringBell 0.8s ease-in-out;
+}
+
+.animate-wave {
+  animation: waveFloat 6s ease-in-out infinite;
+}
+
+.stagger-1 { animation-delay: 0.05s; }
+.stagger-2 { animation-delay: 0.1s; }
+.stagger-3 { animation-delay: 0.15s; }
+.stagger-4 { animation-delay: 0.2s; }
+.stagger-5 { animation-delay: 0.25s; }
+
+/* Wave divider SVG as background */
+.wave-divider {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 40' preserveAspectRatio='none'%3E%3Cpath d='M0 20 Q150 0 300 20 T600 20 T900 20 T1200 20 V40 H0Z' fill='%236EC6CE' opacity='0.15'/%3E%3C/svg%3E");
+  background-size: 600px 40px;
+  background-repeat: repeat-x;
+}
+
+/* Card style */
+.card {
+  background: #fff;
+  border-radius: 20px;
+  padding: 22px 20px;
+  box-shadow: 0 2px 12px rgba(58,45,30,0.06), 0 0 0 1px rgba(110,198,206,0.08);
+}
+
+/* Button base */
 button {
   font-family: inherit;
   cursor: pointer;
   border: none;
-  transition: all 0.2s ease;
+  transition: all 0.15s ease;
 }
 
-button:active {
-  transform: scale(0.98);
+button:active:not(:disabled) {
+  transform: scale(0.97);
 }
 
 button:disabled {
-  opacity: 0.5;
+  opacity: 0.45;
   cursor: not-allowed;
 }
 
-/* Input base styles */
+/* Input base */
 input, select, textarea {
   font-family: inherit;
   color: inherit;
-  border: 2px solid #EDE6DD;
+  border: 2px solid #E2E8EC;
 }
 
 input:focus, select:focus, textarea:focus {
   outline: none;
-  border-color: #E84B3A;
-  box-shadow: 0 0 0 3px rgba(232, 75, 58, 0.1);
+  border-color: #6EC6CE;
+  box-shadow: 0 0 0 3px rgba(110,198,206,0.15);
 }
 
-/* Scrollbar styling */
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #D4DDE2; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #B0BEC5; }
+
+/* Prevent horizontal overflow globally */
+html, body {
+  overflow-x: hidden;
+  max-width: 100vw;
 }
 
-::-webkit-scrollbar-track {
-  background: #FFF8F0;
-}
-
-::-webkit-scrollbar-thumb {
-  background: #D4C4B0;
-  border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: #B8A894;
-}
-
-/* Safe area support for notched devices */
+/* Safe area */
 @supports (padding: max(0px)) {
   body {
     padding-left: max(0px, env(safe-area-inset-left));
     padding-right: max(0px, env(safe-area-inset-right));
     padding-top: max(0px, env(safe-area-inset-top));
   }
+}
+
+/* Responsive type scaling for very small screens */
+@media (max-width: 360px) {
+  h1 { font-size: 1.6rem; }
+  h2 { font-size: 1.15rem; }
+  .font-script { font-size: 1.8rem !important; }
+  .card { padding: 16px 14px; }
+}
+
+/* Better touch targets on mobile */
+@media (max-width: 640px) {
+  button { min-height: 44px; }
+  input, select { min-height: 48px; font-size: 16px !important; }
 }
