@@ -43,7 +43,7 @@ export const metadata: Metadata = {
     siteName: "I Scream, You Scream",
     images: [
       {
-        url: "/og-image.png",
+        url: "/og-image.jpg",
         width: 1200,
         height: 630,
         alt: "I Scream, You Scream — Request the Ice Cream Truck",
@@ -55,7 +55,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "I Scream, You Scream — Request the Ice Cream Truck",
     description: "Ring the bell and the Ice Cream Man heads to your street.",
-    images: ["/og-image.png"],
+    images: ["/og-image.jpg"],
   },
   appleWebApp: {
     capable: true,
