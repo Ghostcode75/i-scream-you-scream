@@ -104,7 +104,7 @@ export default function RequestSection({ onSubmit, heat, truck }: RequestSection
     <section className="animate-slideUp stagger-1">
       {/* Truck status indicator */}
       {truck.active && (
-        <div className="mb-4 bg-white rounded-xl p-3 shadow-sm flex items-center gap-2 text-sm font-semibold text-[#3A2D1E]">
+        <div className="mb-4 bg-white rounded-xl p-3 shadow-sm flex items-center justify-center gap-2 text-sm font-semibold text-[#3A2D1E]">
           <span className="w-2.5 h-2.5 bg-[#4CAF50] rounded-full animate-pulse shrink-0" />
           Truck is near{" "}
           <strong className="text-[#6EC6CE]">
@@ -114,8 +114,8 @@ export default function RequestSection({ onSubmit, heat, truck }: RequestSection
       )}
 
       <div className="card">
-        <h2 className="text-lg mb-1">Where are you?</h2>
-        <p className="text-sm text-[#8A9BA8] mb-3">Pick your area to request the truck</p>
+        <h2 className="text-lg mb-1 text-center">Where are you?</h2>
+        <p className="text-sm text-[#8A9BA8] mb-3 text-center">Pick your area to request the truck</p>
         <div className="grid grid-cols-1 min-[400px]:grid-cols-2 gap-2">
           {AREAS.map((a) => {
             const h = heat[a.id] || 0;

@@ -111,8 +111,8 @@ export default function Home() {
         </span>
       </header>
 
-      <main className="flex-1 px-4 pb-6">
-        <div className="max-w-lg mx-auto w-full space-y-6">
+      <main className="flex-1 w-full px-4 pb-6">
+        <div className="max-w-md mx-auto space-y-6">
           <RequestSection
             onSubmit={handleSubmitRequest}
             heat={heat}

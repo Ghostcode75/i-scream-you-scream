@@ -23,7 +23,7 @@ export default function TruckTracker({ truck, heat }: TruckTrackerProps) {
 
   return (
     <section className="animate-slideUp stagger-2">
-      <div className="flex items-center gap-2 mb-4">
+      <div className="flex items-center justify-center gap-2 mb-4">
         <IconMapPin size={22} className="text-[#6EC6CE]" />
         <h2 className="text-lg font-bold text-[#3A2D1E]">Truck Tracker</h2>
       </div>
