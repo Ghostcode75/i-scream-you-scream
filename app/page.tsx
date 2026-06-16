@@ -94,9 +94,9 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen min-h-dvh bg-[#FFF9F5] flex flex-col">
+    <div className="min-h-screen min-h-dvh bg-[#FFF9F5] flex flex-col items-center">
       {/* Hero */}
-      <header className="text-center pt-8 pb-4 px-4 animate-slideUp">
+      <header className="text-center pt-8 pb-4 px-4 w-full animate-slideUp">
         <div className="flex justify-center mb-3">
           <TruckLogo size={130} className="animate-truck" />
         </div>
@@ -111,15 +111,13 @@ export default function Home() {
         </span>
       </header>
 
-      <main className="flex-1 w-full px-4 pb-6">
-        <div className="max-w-md mx-auto space-y-6">
-          <RequestSection
-            onSubmit={handleSubmitRequest}
-            heat={heat}
-            truck={truck}
-          />
-          <TruckTracker truck={truck} heat={heat} />
-        </div>
+      <main className="flex-1 w-full max-w-md px-4 pb-6 space-y-6">
+        <RequestSection
+          onSubmit={handleSubmitRequest}
+          heat={heat}
+          truck={truck}
+        />
+        <TruckTracker truck={truck} heat={heat} />
       </main>
 
       <Footer />
